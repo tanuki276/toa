@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function Home() {
-  const [characters, setCharacters] = useState([]);
+  const [character, setCharacter] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -10,23 +10,19 @@ export default function Home() {
         if (!res.ok) throw new Error('APIエラー');
         return res.json();
       })
-      .then((data) => setCharacters(data))
+      .then((data) => setCharacter(data))
       .catch((err) => setError(err.message));
   }, []);
 
   if (error) return <div>エラー: {error}</div>;
-  if (characters.length === 0) return <div>読み込み中…</div>;
+  if (!character) return <div>読み込み中…</div>;
 
   return (
     <div>
-      <h1>キャラクター一覧</h1>
-      <ul>
-        {characters.map((char, index) => (
-          <li key={index}>
-            名前: {char.name} / レア度: {char.rarity} / 役割: {char.role}
-          </li>
-        ))}
-      </ul>
+      <h1>キャラクター情報</h1>
+      <p>名前: {character.name}</p>
+      <p>レア度: {character.rarity}</p>
+      <p>役割: {character.role}</p>
     </div>
   );
 }
