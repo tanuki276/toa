@@ -6,14 +6,9 @@ export default async function handler(req, res) {
   }
 
   try {
-    const apiUrl = 'https://api-brawlstars-character.vercel.app/api/character/random';
+    const apiUrl = `https://api-brawlstars-character.vercel.app/api/character?token=${token}`;
 
-    const response = await fetch(apiUrl, {
-      method: 'GET',
-      headers: {
-        'Authorization': `Bearer ${token}`, 
-      },
-    });
+    const response = await fetch(apiUrl);
 
     if (!response.ok) {
       return res.status(response.status).json({ error: '外部APIエラー' });
