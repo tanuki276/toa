@@ -14,54 +14,120 @@ export default function Home() {
       .catch((err) => setError(err.message));
   }, []);
 
-  if (error) return <div style={styles.error}>エラー: {error}</div>;
-  if (!character) return <div style={styles.loading}>読み込み中…</div>;
+  // スタイル定義
+  const styles = {
+    container: {
+      maxWidth: 500,
+      margin: '60px auto',
+      padding: 30,
+      fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
+      background: 'linear-gradient(135deg, #e0f2f7, #fff)',
+      borderRadius: 12,
+      boxShadow: '0 6px 12px rgba(0,0,0,0.15)',
+      transition: 'transform 0.3s ease-in-out',
+    },
+    title: {
+      textAlign: 'center',
+      color: '#2c3e50',
+      marginBottom: 30,
+      fontSize: '2.2em',
+      fontWeight: 'bold',
+      textShadow: '2px 2px 4px rgba(0,0,0,0.05)',
+    },
+    card: {
+      background: 'linear-gradient(45deg, #fff, #f0f8ff)',
+      padding: 30,
+      borderRadius: 10,
+      boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
+      lineHeight: 1.8,
+      color: '#34495e',
+    },
+    cardItem: {
+      marginBottom: 15,
+      display: 'flex',
+      alignItems: 'center',
+    },
+    cardItemLabel: {
+      fontWeight: 'bold',
+      marginRight: 10,
+      color: '#1c3957',
+    },
+    loading: {
+      textAlign: 'center',
+      marginTop: 80,
+      fontSize: 20,
+      color: '#777',
+    },
+    error: {
+      textAlign: 'center',
+      marginTop: 80,
+      fontSize: 20,
+      color: '#e74c3c',
+    },
+    icon: {
+      marginRight: 8,
+      color: '#3498db',
+      fontSize: '1.2em',
+    },
+  };
+
+  if (error) return (
+    <div style={styles.error}>
+      エラー: {error}
+      {}
+      <style jsx global>{`
+        @keyframes shake {
+          0% { transform: translateX(0); }
+          25% { transform: translateX(-5px); }
+          50% { transform: translateX(5px); }
+          75% { transform: translateX(-5px); }
+          100% { transform: translateX(0); }
+        }
+        .${styles.error.className || ''} { 
+          animation: shake 0.5s infinite;
+        }
+      `}</style>
+    </div>
+  );
+  if (!character) return (
+    <div style={styles.loading}>
+      読み込み中…
+      {/* ローディング時のフェードアニメーション */}
+      <style jsx global>{`
+        @keyframes fade {
+          from { opacity: 0.6; }
+          to { opacity: 1; }
+        }
+        .${styles.loading.className || ''} { 
+          animation: fade 1.5s infinite alternate;
+        }
+      `}</style>
+    </div>
+  );
 
   return (
     <div style={styles.container}>
       <h1 style={styles.title}>キャラクター情報</h1>
       <div style={styles.card}>
-        <p><strong>名前:</strong> {character.name}</p>
-        <p><strong>レア度:</strong> {character.rarity}</p>
-        <p><strong>役割:</strong> {character.role}</p>
+        <div style={styles.cardItem}>
+          <span style={styles.cardItemLabel}>名前:</span>
+          {character.name}
+        </div>
+        <div style={styles.cardItem}>
+          <span style={styles.cardItemLabel}>レア度:</span>
+          {character.rarity}
+        </div>
+        <div style={styles.cardItem}>
+          <span style={styles.cardItemLabel}>役割:</span>
+          {character.role}
+        </div>
       </div>
+      {}
+      <style jsx>{`
+        div:hover {
+          transform: scale(1.02);
+        }
+      `}</style>
     </div>
   );
 }
-
-const styles = {
-  container: {
-    maxWidth: 400,
-    margin: '40px auto',
-    padding: 20,
-    fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-    backgroundColor: '#f8f9fa',
-    borderRadius: 8,
-    boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-  },
-  title: {
-    textAlign: 'center',
-    color: '#333',
-    marginBottom: 24,
-  },
-  card: {
-    backgroundColor: '#fff',
-    padding: 20,
-    borderRadius: 8,
-    boxShadow: '0 2px 6px rgba(0,0,0,0.05)',
-    lineHeight: 1.6,
-    color: '#444',
-  },
-  loading: {
-    textAlign: 'center',
-    marginTop: 60,
-    fontSize: 18,
-    color: '#666',
-  },
-  error: {
-    textAlign: 'center',
-    marginTop: 60,
-    fontSize: 18,
-    color: 'red',
-  },
-};
