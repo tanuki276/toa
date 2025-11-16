@@ -1,133 +1,69 @@
-import { useState, useEffect } from 'react';
+// pages/index.js
 
-export default function Home() {
-  const [character, setCharacter] = useState(null);
-  const [error, setError] = useState(null);
+import React, { useState } from 'react';
 
-  useEffect(() => {
-    fetch('/api/character')
-      .then((res) => {
-        if (!res.ok) throw new Error('APIエラー');
-        return res.json();
-      })
-      .then((data) => setCharacter(data))
-      .catch((err) => setError(err.message));
-  }, []);
+export default function SurveyForm() {
+  const [name, setName] = useState('');
+  const [answer, setAnswer] = useState('');
+  const [message, setMessage] = useState('');
 
-  // スタイル定義
-  const styles = {
-    container: {
-      maxWidth: 500,
-      margin: '60px auto',
-      padding: 30,
-      fontFamily: "'Segoe UI', Tahoma, Geneva, Verdana, sans-serif",
-      background: 'linear-gradient(135deg, #e0f2f7, #fff)',
-      borderRadius: 12,
-      boxShadow: '0 6px 12px rgba(0,0,0,0.15)',
-      transition: 'transform 0.3s ease-in-out',
-    },
-    title: {
-      textAlign: 'center',
-      color: '#2c3e50',
-      marginBottom: 30,
-      fontSize: '2.2em',
-      fontWeight: 'bold',
-      textShadow: '2px 2px 4px rgba(0,0,0,0.05)',
-    },
-    card: {
-      background: 'linear-gradient(45deg, #fff, #f0f8ff)',
-      padding: 30,
-      borderRadius: 10,
-      boxShadow: '0 4px 10px rgba(0,0,0,0.1)',
-      lineHeight: 1.8,
-      color: '#34495e',
-    },
-    cardItem: {
-      marginBottom: 15,
-      display: 'flex',
-      alignItems: 'center',
-    },
-    cardItemLabel: {
-      fontWeight: 'bold',
-      marginRight: 10,
-      color: '#1c3957',
-    },
-    loading: {
-      textAlign: 'center',
-      marginTop: 80,
-      fontSize: 20,
-      color: '#777',
-    },
-    error: {
-      textAlign: 'center',
-      marginTop: 80,
-      fontSize: 20,
-      color: '#e74c3c',
-    },
-    icon: {
-      marginRight: 8,
-      color: '#3498db',
-      fontSize: '1.2em',
-    },
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setMessage('送信中...');
+
+    try {
+      const response = await fetch('/api/character', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ name, answer }),
+      });
+
+      if (response.ok) {
+        setMessage('✅ アンケート回答が正常に送信されました。');
+        setName('');
+        setAnswer('');
+      } else {
+        const errorData = await response.json();
+        setMessage(`❌ 送信失敗: ${errorData.message}`);
+      }
+    } catch (error) {
+      console.error(error);
+      setMessage('❌ ネットワークエラーが発生しました。');
+    }
   };
 
-  if (error) return (
-    <div style={styles.error}>
-      エラー: {error}
-      {}
-      <style jsx global>{`
-        @keyframes shake {
-          0% { transform: translateX(0); }
-          25% { transform: translateX(-5px); }
-          50% { transform: translateX(5px); }
-          75% { transform: translateX(-5px); }
-          100% { transform: translateX(0); }
-        }
-        .${styles.error.className || ''} { 
-          animation: shake 0.5s infinite;
-        }
-      `}</style>
-    </div>
-  );
-  if (!character) return (
-    <div style={styles.loading}>
-      読み込み中…
-      {/* ローディング時のフェードアニメーション */}
-      <style jsx global>{`
-        @keyframes fade {
-          from { opacity: 0.6; }
-          to { opacity: 1; }
-        }
-        .${styles.loading.className || ''} { 
-          animation: fade 1.5s infinite alternate;
-        }
-      `}</style>
-    </div>
-  );
-
   return (
-    <div style={styles.container}>
-      <h1 style={styles.title}>キャラクター情報</h1>
-      <div style={styles.card}>
-        <div style={styles.cardItem}>
-          <span style={styles.cardItemLabel}>名前:</span>
-          {character.name}
+    <div style={{ padding: '20px', maxWidth: '600px', margin: 'auto' }}>
+      <h1>Next.js アンケートフォーム</h1>
+      <p>このフォームからの回答が /api/character を経由してDiscordに送信されます。</p>
+      <form onSubmit={handleSubmit}>
+        <div style={{ marginBottom: '15px' }}>
+          <label htmlFor="name">お名前:</label>
+          <input
+            id="name"
+            type="text"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            style={{ width: '100%', padding: '8px' }}
+          />
         </div>
-        <div style={styles.cardItem}>
-          <span style={styles.cardItemLabel}>レア度:</span>
-          {character.rarity}
+        <div style={{ marginBottom: '15px' }}>
+          <label htmlFor="answer">自由回答:</label>
+          <textarea
+            id="answer"
+            value={answer}
+            onChange={(e) => setAnswer(e.target.value)}
+            required
+            rows="5"
+            style={{ width: '100%', padding: '8px' }}
+          />
         </div>
-        <div style={styles.cardItem}>
-          <span style={styles.cardItemLabel}>役割:</span>
-          {character.role}
-        </div>
-      </div>
-      {}
-      <style jsx>{`
-        div:hover {
-          transform: scale(1.02);
-        }
-      `}</style>
+        <button type="submit" style={{ padding: '10px 20px' }}>回答を送信</button>
+      </form>
+      {message && <p style={{ marginTop: '20px', fontWeight: 'bold' }}>{message}</p>}
     </div>
   );
 }
